@@ -9,6 +9,8 @@ library(tidyverse)
 library(readxl)
 
 knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
   fig.width = 6,
   fig.asp = .6,
   out.width = "90%"
@@ -24,7 +26,6 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
-knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 ## Problem 1: Data
@@ -117,6 +118,23 @@ dogweights_df %>%
 
 
 ## Problem 3: Visualization
+
+```{r}
+dogweights_df %>% 
+  filter(dognames_and_std %in% c("raisin", "simone", "gagne")) %>% 
+  group_by(dognames_and_std) %>% 
+  rename(dognames = dognames_and_std) %>% 
+  mutate(
+    dognames = factor(dognames, levels = c("gagne", "simone", "raisin"))
+    ) %>% 
+  ggplot(aes(x = dognames, y = weights_in_lbs)) +
+  geom_boxplot(aes(color = dognames)) +
+  labs(
+    tittle = "The distribution of weights for each dog",
+    x = "Dog names",
+    y = "Weight (Lbs)"
+  )
+```
 
 
 
