@@ -41,7 +41,6 @@ dogweights_df =
   mutate(date = as.numeric(date),
          date = janitor::excel_numeric_to_date(date)) %>% 
   select(-x6) %>% 
-  separate(date, into = c("year", "month", "day"), sep = "-" ) %>% 
   pivot_longer(
     raisin:std,
     names_to = "dognames_and_std",
@@ -53,7 +52,7 @@ dogweights_df =
     Oz = as.numeric(Oz),
     weights_in_lbs = Lbs + Oz * 0.0625
     ) %>% 
-  drop_na(weights_in_lbs, year) %>% 
+  drop_na(weights_in_lbs, date) %>% 
   select(-Lbs, -Oz)
 
 dogweights_df
@@ -72,8 +71,7 @@ notes_df =
          date = janitor::excel_numeric_to_date(date)) %>% 
   rename(note = x6) %>% 
   select(date, note) %>% 
-  separate(date, into = c("year", "month", "day"), sep = "-" ) %>% 
-  drop_na(year, note)
+  drop_na(date, note)
 
 notes_df
 ```
@@ -93,8 +91,7 @@ The tidy dataset now is consists of `r ncol(dogweights_df)` variables and `r nro
 ```{r}
 unique_dates=
   dogweights_df %>% 
-  group_by(year, month, day) %>% 
-  distinct(year) %>% 
+  distinct(date) %>% 
   nrow()
 
 unique_dates
@@ -135,7 +132,6 @@ dogweights_df %>%
     y = "Weight (Lbs)"
   )
 ```
-
 
 
 
