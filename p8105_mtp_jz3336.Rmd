@@ -86,12 +86,36 @@ write.csv(notes_df, "./data/notes.csv")
 **Description of the cleaned dogweights_df dataset**:
 The tidy dataset now is consists of `r ncol(dogweights_df)` variables and `r nrow(dogweights_df)` observations. The variables are "year", "month", "day", "dognames_and_std", and "weights_in_Lbs". The "note" column in the raw dataset was omitted.
 
+**Unique dates**
 ```{r}
 unique_dates=
   dogweights_df %>% 
   group_by(year, month, day) %>% 
   distinct(year) %>% 
   nrow()
+
+unique_dates
+```
+The number of unique dates in the tidy dog-weights dataset is `r unique_dates`. This number of unique dates is less than the number of unique dates in the raw dataset, because the tidy dataset has omitted dates with no weight records associated and dates that cannot be converted to readable names, such as "s".
+
+
+**Table showing the dog names with their associate number of observation, average weight, and the standard deviation: **
+```{r}
+dogweights_df %>% 
+  filter(dognames_and_std %in% c("raisin", "simone", "gagne")) %>% 
+  group_by(dognames_and_std) %>%
+  rename(dognames = dognames_and_std) %>% 
+  summarize(
+    number_of_obs = n(),
+    average_weight = mean(weights_in_lbs),
+    sd_of_weight = sd(weights_in_lbs)
+  ) %>% 
+   knitr::kable()
 ```
 
-The number of unique dates in the tidy dog-weights dataset is `r unique_dates`. This number of unique dates is less than the number of unique dates in the raw dataset, because the tidy dataset has omitted dates with no weight records associated and dates that cannot be converted to readable names, such as "s".
+
+
+
+
+
+
