@@ -23,6 +23,8 @@ options(
 
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
+
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)
 ```
 
 ## Problem 1: Data
@@ -99,7 +101,7 @@ unique_dates
 The number of unique dates in the tidy dog-weights dataset is `r unique_dates`. This number of unique dates is less than the number of unique dates in the raw dataset, because the tidy dataset has omitted dates with no weight records associated and dates that cannot be converted to readable names, such as "s".
 
 
-**Table showing the dog names with their associate number of observation, average weight, and the standard deviation: **
+**Table showing the dog names with their associate number of observation, average weight, and the standard deviation:**
 ```{r}
 dogweights_df %>% 
   filter(dognames_and_std %in% c("raisin", "simone", "gagne")) %>% 
@@ -113,6 +115,8 @@ dogweights_df %>%
    knitr::kable()
 ```
 
+
+## Problem 3: Visualization
 
 
 
