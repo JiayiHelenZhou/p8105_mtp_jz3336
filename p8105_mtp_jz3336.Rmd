@@ -1,5 +1,6 @@
 ---
 title: "Midterm Project"
+author: Jiayi Zhou
 output: github_document
 ---
 
@@ -24,12 +25,32 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
+## Problem 1: Data
+
+The dog weights raw dataset has six variables. The first column contains the date of each weighing from August 12nd, 2018 to September 7th, 2020, while some dates in this period were not recorded. The second to fifth columns contain information about the weights of three dogs and a standard object: Raisin, Simon, Gagne, and std. All weights were recorded in the unit of Lbs and Oz. The last column contains occasional notes about kennel. 
+
 ```{r}
 dogweights_df =
   read_excel("./dogweights_07sept2020.xlsx", skip = 1) %>% 
   janitor::clean_names() %>%
   mutate(date = as.numeric(date),
          date = janitor::excel_numeric_to_date(date)) %>% 
-  select(-x6)
+  select(-x6) %>% 
+  separate(date, into = c("year", "month", "day"), sep = "-" ) %>% 
+  pivot_longer(
+    raisin:std,
+    names_to = "dognames_and_std",
+    values_to = "weights"
+  ) %>% 
+  separate(weights, into = c("Lbs", "Oz"), sep = " ") %>% 
+  mutate(
+    Lbs = as.numeric(Lbs),
+    Oz = as.numeric(Oz),
+    weights_in_Lbs = Lbs + Oz * 0.0625
+    ) %>% 
+  drop_na(weights_in_Lbs, year) %>% 
+  select(-Lbs, -Oz)
+
+dogweights_df
 ```
 
