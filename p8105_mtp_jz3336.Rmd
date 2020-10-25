@@ -30,8 +30,8 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ## Problem 1: Data
 
-**Description on the raw dataset**:
-The dog weights raw dataset has six variables. The first column contains the date of each weighing from August 12nd, 2018 to September 7th, 2020, while some dates in this period were not recorded. The second to fifth columns contain information about the weights of three dogs and a standard object: Raisin, Simon, Gagne, and std. All weights were recorded in the combination of Lbs and Oz. The last column contains occasional notes about kennel. 
+**Description on the raw dataset:**
+The dog weights raw dataset has six variables. The first column contains the date of each weighing from August 12nd, 2018 to September 7th, 2020, while some dates in this period were not recorded. The second to fifth columns contain information about the weights of three dogs and a standard object: Raisin, Simon, Gagne, and std. All weights were recorded in the combination of Lbs and Oz. The last column contains occasional notes. My goal is to clean and preserve valuable data of the dataset, then report summarizations and trends.
 
 **First dataframe about dog weights**
 ```{r}
@@ -58,8 +58,11 @@ dogweights_df =
 dogweights_df
 ```
 
-**Descriptions of the steps for tidying the dogweights_df dataframe**:
-First, I imported the raw excel dataset using the readxl package. After cleaning up the variable names, I noticed that the observations in "date" were shown as five digits serial numbers rather than readable dates. Thus, I first used as_numeric from mutate to transfer "date" from a character variable to numeric variable, then the excel_numeric_to_date from the janitor package was used to convert the serial number observations to date class. Next, I put all dog names and the "std" representing standard objects into the "dognames_and_std" columns since they are all names. The weights associated with each name on each day were also converted to Lbs and then organized into "weights_in_lbs" columns. To convert the weight unit, separation of the weight in Lbs and weights in Oz was done first. Then, weights in Oz times the coefficient 0.0625 was added back to Lbs to get the total weight in single unit Lbs. Furthermore, the missing value in the new variable "weights_in_lbs" can be dropped without interfering other useful observations. There were also several NAs in the "date" variable resulted from an "s" entry in "date" in the raw dataset. Thus, I chose to also drop missing values in "date" which helped me to leave out all NAs associated with the "s" entry. Even though there were weights recorded on the day "s", but these weights value are not meaning for data analysis without the associate date. 
+**Descriptions of the steps for tidying:**
+The observations in "date" were shown as serial numbers after importation. Thus, I first transfered "date" to numeric variable, then the excel_numeric_to_date from the janitor package was used to convert the serial numbers to date class. Next, I put all dog names and the "std" into the "dognames_and_std" columns using pivot_longer since they can all be categorized as names. All weights were organized into "weights_in_lbs" columns. To convert the weight unit, separation of the Lbs and Oz in the same cell was done first. Then, (weights(Oz)*0.0625) was added back to weights(Lbs) to get the whole weight in single unit Lbs.
+
+**About NAs:**
+I chose to drop NAs in the tidied dataset. After pivoting, dropping the NAs in weight will only delete the observations that have no weight recorded for one specific name (dogs or std) on the specific date. I chose to drop the NAs in “date” too, even though there is weight information associated with the NAs in “date”. This is because weight records without date, as well as dates without weight records, may not be useful for data analysis and plot generation.
 
 **Second dataframe about notes**
 ```{r}
@@ -83,10 +86,10 @@ write.csv(notes_df, "./data/notes.csv")
 
 ## Problem 2: EDA
 
-**Description of the cleaned dogweights_df dataset**:
-The tidy dataset is consists of `r ncol(dogweights_df)` variables and `r nrow(dogweights_df)` observations. The variables are "date", "dognames_and_std", and "weights_in_lbs". The "note" column in the raw dataset was omitted in the dogweights_df.
+**Description of the cleaned dogweights_df dataset:**
+The tidy dataset is a tibble: `r ncol(dogweights_df)` x `r nrow(dogweights_df)`. The 3 variables are "date", "dognames_and_std", and "weights_in_lbs". 
 
-**Unique dates**
+**Unique dates:**
 ```{r}
 unique_dates=
   dogweights_df %>% 
@@ -95,8 +98,7 @@ unique_dates=
 
 unique_dates
 ```
-The number of unique dates in the tidy dog-weights dataset is `r unique_dates`. This number of unique dates is less than the number of unique dates in the raw dataset, because the tidy dataset has omitted dates with no weight records associated and dates that cannot be converted to readable names, such as "s".
-
+There are `r unique_dates` unique dates in the tidy dog-weights dataset.
 
 **Table showing the dog names with their associate number of observation, average weight, and the standard deviation:**
 ```{r}
@@ -151,7 +153,9 @@ weight_over_time =
 distribution_of_weight + weight_over_time
 ```
 
+**Weight Distribution:** The weight distributions of Gagne is relatively left-skewed with more lower bound outliers compare to Simone's normally distributed weight, while they have similar distribution ranges and medians around 10. The distribution of Raisin's weight is close to normal with several extreme outliers. It also has a much larger median, around 18, compare to the other two dogs.
 
+**Weight Change:** Raisin's weight has been on a decreasing trend and started to increase gradually since October 2019. Simone's weight did not vary too much over the three-years period. Gagne's weight started to decrease rapidly since April 2019. He died on September 8th, 2019 according to the note.
 
 
 
